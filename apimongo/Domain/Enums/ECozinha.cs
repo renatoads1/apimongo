@@ -13,4 +13,19 @@ namespace apimongo.Domain.Enums
         Grega =4,
         Shinesa =5
     }
+
+    public static class ECozinhaHelper {
+
+        public static ECozinha ConverterDeInteiro(int valor) {
+            if (Enum.TryParse(valor.ToString(), out ECozinha cozinha))
+            {
+                return cozinha;
+            }
+            else {
+                throw new ArgumentOutOfRangeException("cozinha");
+            }
+        }
+
+    }
+
 }

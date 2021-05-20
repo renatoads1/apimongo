@@ -16,6 +16,16 @@ namespace apimongo.Domain.ValueObject
         public string Cep { get; private set; }
         public ValidationResult ValidationResult { get; set; }
 
+        public Endereco(string logradouro, string numero, string cidade, string uf, string cep, ValidationResult validationResult)
+        {
+            Logradouro = logradouro;
+            Numero = numero;
+            Cidade = cidade;
+            Uf = uf;
+            Cep = cep;
+            ValidationResult = validationResult;
+        }
+
         public virtual bool Validar() {
 
             ValidarLogradouro();

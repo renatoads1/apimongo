@@ -12,6 +12,12 @@ namespace apimongo.Domain.Entities
         public ECozinha Cozinha { get; private set; }
         public Endereco Endereco { get; private set; }
 
+        public Restaurante(string nome, ECozinha cozinha)
+        {
+            Nome = nome;
+            Cozinha = cozinha;
+        }
+
         public Restaurante(string id, string nome, ECozinha cozinha)
         {
             Id = id;
