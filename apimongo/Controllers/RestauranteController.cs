@@ -1,4 +1,5 @@
 ﻿using apimongo.Controllers.Inputs;
+using apimongo.Controllers.Outputs;
 using apimongo.Data.Repositories;
 using apimongo.Domain.Entities;
 using apimongo.Domain.Enums;
@@ -45,5 +46,43 @@ namespace apimongo.Controllers
 
             return Ok(new {data = "restaurante inserido com sucesso!!" });
         }
+
+        [HttpGet("restaurante/todos")]
+        public async Task<IActionResult> ObterRestaurantes() {
+
+            var restaurantes = await _restauranteRepository.ObterTodos();
+            var listagem = restaurantes.Select(_ => new RestauranteListagem
+            {
+                Id = _.Id,
+                Nome = _.Nome,
+                Cozinha = (int)_.Cozinha,
+                Cidade = _.Endereco.Cidade
+            });
+            return Ok(new
+            {
+                data = listagem
+            });
+        
+        }
+
+        [HttpGet("restaurante/{id}")]
+        public async Task<IActionResult> ObterRestaurantes(string id)
+        {
+            var restaurante = _restauranteRepository.ObterPorId(id);
+            if (restaurante == null) 
+                return NotFound();
+
+            
+            var exibicao = new RestauranteExibicao { 
+                Id = restaurante.Id,
+                Nome = restaurante.Nome,
+                Cozinha = (int)restaurante.Cozinha,
+
+            }
+
+        }
+
+
+
+        }
     }
-}

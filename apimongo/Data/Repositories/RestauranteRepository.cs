@@ -1,6 +1,10 @@
 ﻿using apimongo.Data.Schemas;
 using apimongo.Domain.Entities;
+using apimongo.Domain.ValueObject;
 using MongoDB.Driver;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace apimongo.Data.Repositories
 {
@@ -29,7 +33,35 @@ namespace apimongo.Data.Repositories
                     Uf = restaurante.Endereco.Uf
                 }
             };
-            _restaurante.InsertOne(document); 
+            _restaurante.InsertOne(document);
         }
+
+        public async Task<IEnumerable<Restaurante>> ObterTodos(){
+            var restaurantes = new List<Restaurante>();
+            await _restaurante.AsQueryable().ForEachAsync(_=> {
+                var r = new Restaurante(_.Id.ToString(), _.Nome, _.Cozinha);
+                var e = new Endereco(_.Endereco.Logradouro,
+                    _.Endereco.Numero,
+                    _.Endereco.Cidade,
+                    _.Endereco.Uf,
+                    _.Endereco.Cep);
+                r.AtribuirEndereco(e);
+                restaurantes.Add(r);
+            });
+
+
+            return restaurantes;
+        }
+
+        public Restaurante ObterPorId(string id) {
+
+            var document = _restaurante.AsQueryable().FirstOrDefault(_ => _.Id == id);
+            if (document == null)
+                return null;
+
+            return document.ConverterParaDomain();
+
+        }
+
     }
 }
