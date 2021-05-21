@@ -1,4 +1,5 @@
 ﻿using apimongo.Controllers.Inputs;
+using apimongo.Data.Repositories;
 using apimongo.Domain.Entities;
 using apimongo.Domain.Enums;
 using apimongo.Domain.ValueObject;
@@ -15,6 +16,13 @@ namespace apimongo.Controllers
     [Route("[controller]")]
     public class RestauranteController : ControllerBase
     {
+        private readonly RestauranteRepository _restauranteRepository;
+
+        public RestauranteController(RestauranteRepository restauranteRepository)
+        {
+            _restauranteRepository = restauranteRepository;
+        }
+
         [HttpPost("restaurante")]
         public ActionResult IncluirRestaurante([FromBody] RestauranteInclusao restauranteInclusao) {
 
@@ -28,7 +36,14 @@ namespace apimongo.Controllers
                 restauranteInclusao.Cep
             );
             restaurante.AtribuirEndereco(endereco);
+            if (!restaurante.Validar())
+            {
+                return BadRequest(new{errors = restaurante.ValidationResult.Errors.Select(a => a.ErrorMessage)});
+            }
 
+            _restauranteRepository.Inserir(restaurante);
+
+            return Ok(new {data = "restaurante inserido com sucesso!!" });
         }
     }
 }
