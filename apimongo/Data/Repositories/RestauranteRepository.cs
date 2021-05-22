@@ -5,6 +5,7 @@ using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using apimongo.Domain.Enums;
 
 namespace apimongo.Data.Repositories
 {
@@ -61,6 +62,31 @@ namespace apimongo.Data.Repositories
 
             return document.ConverterParaDomain();
 
+        }
+
+        public bool AlterarCompleto(Restaurante restaurante) {
+
+            var documento = new RestauranteSchema
+            {
+                Id = restaurante.Id,
+                Nome = restaurante.Nome,
+                Cozinha = restaurante.Cozinha,
+                Endereco = new EnderecoSchema { 
+                    Logradouro = restaurante.Endereco.Logradouro,
+                    Numero = restaurante.Endereco.Numero,
+                    Cidade = restaurante.Endereco.Cidade,
+                    Cep = restaurante.Endereco.Cep,
+                    Uf = restaurante.Endereco.Uf
+                }
+            };
+            var resultado = _restaurante.ReplaceOne(_ => _.Id == documento.Id, documento);
+            return resultado.ModifiedCount > 0;
+        }
+
+        public bool AlterarCozinha(string id, ECozinha cozinha) {
+            var atualizacao = Builders<RestauranteSchema>.Update.Set(_ => _.Cozinha, cozinha);
+            var resultado = _restaurante.UpdateOne(_ => _.Id == id, atualizacao);
+            return resultado.ModifiedCount > 0;
         }
 
     }

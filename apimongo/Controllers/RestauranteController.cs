@@ -66,19 +66,30 @@ namespace apimongo.Controllers
         }
 
         [HttpGet("restaurante/{id}")]
-        public async Task<IActionResult> ObterRestaurantes(string id)
+        public ActionResult ObterRestaurante(string id)
         {
             var restaurante = _restauranteRepository.ObterPorId(id);
             if (restaurante == null) 
                 return NotFound();
 
-            
-            var exibicao = new RestauranteExibicao { 
+
+            var exibicao = new RestauranteExibicao
+            {
                 Id = restaurante.Id,
                 Nome = restaurante.Nome,
-                Cozinha = (int)restaurante.Cozinha,
+                //deveria ser int
+                Cozinha = restaurante.Cozinha.ToString(),
+                Endereco = new EnderecoExibicao
+                {
+                    Logadouro = restaurante.Endereco.Logradouro,
+                    Numero = restaurante.Endereco.Numero,
+                    Cidade = restaurante.Endereco.Cidade,
+                    Cep = restaurante.Endereco.Cep,
+                    UF = restaurante.Endereco.Uf
+                }
+            };
 
-            }
+            return Ok(new { data=exibicao });
 
         }
 
